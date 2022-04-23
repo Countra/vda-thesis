@@ -1,9 +1,17 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="common-layout">
+    <el-container>
+      <el-header><PageHeader></PageHeader> </el-header>
+      <el-container>
+        <el-aside width="200px">
+          <Siderbar></Siderbar>
+        </el-aside>
+        <el-main>
+          <router-view></router-view>
+        </el-main>
+      </el-container>
+    </el-container>
+  </div>
 </template>
 
 <style>
@@ -27,4 +35,19 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
+
 </style>
+
+<script>
+import Siderbar from "./components/Sidebar.vue";
+import PageHeader from "./components/PageHeader.vue";
+export default {
+  components: {
+    Siderbar,
+    PageHeader,
+  },
+  setup() {
+    return {};
+  },
+};
+</script>
