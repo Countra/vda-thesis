@@ -1,7 +1,7 @@
 <template>
   <el-row class="tac">
     <el-col :span="12">
-      <h5 style="width: max-content">论文查询&可视化分析</h5>
+      <h5 style="width: max-content">学术搜索&可视化分析</h5>
       <el-menu
         default-active="1"
         class="el-menu-vertical-demo"

@@ -13,6 +13,9 @@ export default {
   components: {
     ThesisSearch,
   },
+  mounted(){
+    console.log(process.env.VUE_APP_BACK_API);
+  }
 };
 </script>
 
