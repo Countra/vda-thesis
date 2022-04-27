@@ -1,13 +1,6 @@
 <template>
-  <el-button
-    type="primary"
-    class="search-result-button"
-    @click="displaySearchResult"
-  >
-    搜索结果
-  </el-button>
   <el-drawer
-    v-model="drawer"
+    v-model="$store.state.searchResultDisplay"
     :direction="direction"
     :before-close="handleClose"
     :size="size"
@@ -47,7 +40,12 @@
             border
           >
             <template #extra>
-              <el-button type="primary">可视化分析</el-button>
+              <el-button
+                type="primary"
+                :data-paperId="item.paperId"
+                @click="visualAnalysis"
+                >可视化分析</el-button
+              >
             </template>
             <el-descriptions-item label="作者：">
               <span v-if="item.authors == null || item.authors.length == 0">
@@ -135,10 +133,10 @@
 import { inject, ref } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
 import axios from "axios";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const drawer = ref(false);
     const direction = ref("btt");
     const size = ref("calc(100% - 75px)");
 
@@ -152,6 +150,9 @@ export default {
     const store = inject("store");
 
     const backTopRef = ref(null);
+
+    // 使用路由
+    const router = useRouter();
 
     const handleClose = (done) => {
       ElMessageBox.confirm("确定要关闭搜索结果吗？", {
@@ -174,7 +175,7 @@ export default {
 
     // 展开搜索结果
     const displaySearchResult = () => {
-      drawer.value = true;
+      store.commit("setSearchResultDisplay", true);
     };
 
     // 改变页数
@@ -223,8 +224,32 @@ export default {
         });
     };
 
+    // 构建可视化分析
+    const visualAnalysis = (e) => {
+      // currentTarget 获取当前被点击的元素
+      const node = e.currentTarget;
+      const nodePaperId = node.getAttribute("data-paperId");
+      ElMessageBox.confirm("是否对该文献进行可视化分析?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "info",
+        draggable: true,
+      })
+        .then(() => {
+          router.push({
+            name: "vdaAnalysis",
+            params: { paperId: nodePaperId },
+          });
+        })
+        .catch(() => {
+          ElMessage({
+            type: "info",
+            message: "已取消",
+          });
+        });
+    };
+
     return {
-      drawer,
       direction,
       size,
       disabled,
@@ -233,17 +258,13 @@ export default {
       handleClose,
       displaySearchResult,
       changePage,
+      visualAnalysis,
     };
   },
 };
 </script>
 
 <style scoped>
-.search-result-button {
-  position: relative;
-  margin-top: 50px;
-}
-
 .search-result-none {
   display: flex;
   justify-content: center;

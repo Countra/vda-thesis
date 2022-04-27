@@ -17,10 +17,9 @@
             <router-link to="/" class="sider-nav">
               <el-menu-item index="1-1">论文查询</el-menu-item>
             </router-link>
-
-            <router-link to="/history" class="sider-nav">
-              <el-menu-item index="1-2">查询历史记录</el-menu-item>
-            </router-link>
+            <div class="sider-nav" @click="jumpToSearchResult">
+              <el-menu-item index="1-2">显示搜索结果</el-menu-item>
+            </div>
           </el-menu-item-group>
         </el-sub-menu>
         <router-link to="/analysis/vda" class="sider-nav">
@@ -36,20 +35,32 @@
 
 <script >
 import { ref } from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
     const isCollapse = ref(true);
+    const store = useStore();
+    const router = useRouter();
+
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);
     };
     const handleClose = (key, keyPath) => {
       console.log(key, keyPath);
     };
+
+    const jumpToSearchResult = () => {
+      router.push("/");
+      store.commit("setSearchResultDisplay", true);
+    };
+
     return {
       isCollapse,
       handleOpen,
       handleClose,
+      jumpToSearchResult,
     };
   },
 };

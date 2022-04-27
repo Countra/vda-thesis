@@ -1,5 +1,16 @@
 <template>
-  <div class="about">
-    <h1>可视化分析</h1>
+  <div>
+    <VdaAnalysis />
   </div>
 </template>
+
+<script>
+import VdaAnalysis from "@/components/VdaAnalysis.vue";
+
+export default {
+  components: {
+    VdaAnalysis,
+  },
+  setup() {},
+};
+</script>

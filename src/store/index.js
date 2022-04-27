@@ -2,6 +2,8 @@ import { createStore } from 'vuex'
 
 export default createStore({
   state: {
+    // 搜索结果显示状态
+    searchResultDisplay: false,
     searchResult: null,
     seachResultKeyWord: "",
     searchResultOffset: 0,
@@ -20,6 +22,10 @@ export default createStore({
     }
   },
   mutations: {
+    // 搜索结果显示状态
+    setSearchResultDisplay: (state, result) => {
+      state.searchResultDisplay = result;
+    },
     setSearchResult: (state, result) => {
       state.searchResult = result;
     },
