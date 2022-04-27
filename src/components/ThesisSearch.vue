@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { ref, onMounted, onBeforeMount } from "vue";
+import { ref, onMounted, onBeforeMount, provide } from "vue";
 import { Search } from "@element-plus/icons-vue";
 import { ElMessage, ElNotification, ElLoading } from "element-plus";
 import axios from "axios";
@@ -65,6 +65,7 @@ export default {
 
     // 使用vuex的全局变量
     const store = useStore();
+    provide("store", store);
 
     const loadAll = () => {
       return searchHistory;
@@ -131,6 +132,10 @@ export default {
               });
               // 修改搜索结果
               store.commit("setSearchResult", result.data.data);
+              // 设置搜索关键字
+              store.commit("setSeachResultKeyWord", keyWord);
+              // 重置搜索结果的offset
+              store.commit("setSearchResultOffset", offset);
               // 查找是否有重复的记录
               let isReapt = false;
               try {

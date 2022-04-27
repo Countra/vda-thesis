@@ -1,10 +1,10 @@
 <template>
   <el-button
     type="primary"
-    style="margin-left: 16px"
+    class="search-result-button"
     @click="displaySearchResult"
   >
-    open
+    搜索结果
   </el-button>
   <el-drawer
     v-model="drawer"
@@ -14,7 +14,9 @@
   >
     <template #title>
       <h1 class="search-result-title" v-if="$store.state.searchResult != null">
-        匹配到{{ $store.state.searchResult.total }}个搜索结果
+        “{{ $store.state.seachResultKeyWord }}” 大约有{{
+          $store.state.searchResult.total
+        }}搜索结果
       </h1>
       <h1 class="search-result-title" v-else></h1>
     </template>
@@ -24,9 +26,14 @@
         $store.state.searchResult.data.length == 0
       "
     >
-      <h3>暂无搜索数据</h3>
+      <h2 class="search-result-none">
+        <div>
+          <el-icon><warning /></el-icon>
+        </div>
+        暂无搜索数据
+      </h2>
     </div>
-    <div v-else>
+    <div v-else v-loading="resultLoading">
       <div v-for="(item, index) in $store.state.searchResult.data" :key="index">
         <!-- 结果列表 -->
         <el-card shadow="hover" class="result-card">
@@ -43,6 +50,9 @@
               <el-button type="primary">可视化分析</el-button>
             </template>
             <el-descriptions-item label="作者：">
+              <span v-if="item.authors == null || item.authors.length == 0">
+                <el-tag class="ml-2" type="info">暂无数据</el-tag>
+              </span>
               <span v-if="item.authors.length < 5">
                 <span v-for="(i, auIndex) in item.authors" :key="auIndex">
                   {{ i.name }}
@@ -100,14 +110,21 @@
       "
     >
       <!-- 一键回到顶部 -->
-      <el-backtop :bottom="30" :right="25" target=".el-drawer__body" />
+      <el-backtop
+        :bottom="30"
+        :right="25"
+        target=".el-drawer__body"
+        ref="backTopRef"
+      />
       <!-- 分页 -->
       <div class="pagination">
         <el-pagination
           background
           layout="prev, pager, next"
           :total="$store.state.searchResult.total"
+          :currentPage="$store.getters.searchResultCurrentPage"
           @current-change="changePage"
+          :disabled="disabled"
         />
       </div>
     </div>
@@ -115,15 +132,26 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { inject, ref } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
+import axios from "axios";
 
 export default {
   setup() {
     const drawer = ref(false);
     const direction = ref("btt");
     const size = ref("calc(100% - 75px)");
-    // 搜索结果
+
+    // 分页栏的点击状态
+    const disabled = ref(false);
+
+    // 搜索数据加载动画
+    const resultLoading = ref(false);
+
+    // 获取父组件的store对象
+    const store = inject("store");
+
+    const backTopRef = ref(null);
 
     const handleClose = (done) => {
       ElMessageBox.confirm("确定要关闭搜索结果吗？", {
@@ -151,13 +179,57 @@ export default {
 
     // 改变页数
     const changePage = (newPage) => {
+      // 禁用分页栏的状态
+      disabled.value = true;
+      resultLoading.value = true;
       console.log("更改的新标签页:", newPage);
+      console.log("before:", store.state.searchResultOffset);
+      let prevPage = store.getters.searchResultCurrentPage;
+      console.log(prevPage);
+      store.commit(
+        "setSearchResultOffset",
+        (newPage - 1) * store.state.searchResultLimit
+      );
+      console.log("after:", store.state.searchResultOffset);
+      console.log(store.getters.searchResultUrl);
+      axios
+        .get(store.getters.searchResultUrl)
+        .then((result) => {
+          console.log(result);
+          if (result.data.code == 200) {
+            // 返回顶部
+            backTopRef.value.$el.click();
+            // 修改搜索结果
+            store.commit("setSearchResult", result.data.data);
+            disabled.value = false;
+            resultLoading.value = false;
+          } else {
+            ElMessage({
+              message: "出错了，请尝试切换其他结果页",
+              type: "error",
+            });
+            store.commit(
+              "setSearchResultOffset",
+              (prevPage - 1) * store.state.searchResultLimit
+            );
+            disabled.value = false;
+            resultLoading.value = false;
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+          disabled.value = false;
+          resultLoading.value = false;
+        });
     };
 
     return {
       drawer,
       direction,
       size,
+      disabled,
+      resultLoading,
+      backTopRef,
       handleClose,
       displaySearchResult,
       changePage,
@@ -167,9 +239,27 @@ export default {
 </script>
 
 <style scoped>
+.search-result-button {
+  position: relative;
+  margin-top: 50px;
+}
+
+.search-result-none {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.search-result-none div {
+  margin-right: 5px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .result-card {
   /* padding: 10px 20px; */
-  margin: 0 30px 25px 30px;
+  margin: 0 40px 25px 40px;
 }
 
 .search-result-title {
