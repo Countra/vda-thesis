@@ -7,7 +7,7 @@
           <Siderbar></Siderbar>
         </el-aside>
         <el-main>
-          <router-view></router-view>
+          <router-view v-if="isRouterAlive"></router-view>
         </el-main>
       </el-container>
     </el-container>
@@ -35,10 +35,10 @@ nav a {
 nav a.router-link-exact-active {
   color: #42b983;
 }
-
 </style>
 
 <script>
+import { ref, provide, nextTick } from "vue";
 import Siderbar from "./components/Sidebar.vue";
 import PageHeader from "./components/PageHeader.vue";
 export default {
@@ -47,7 +47,16 @@ export default {
     PageHeader,
   },
   setup() {
-    return {};
+    // 局部组件刷新
+    const isRouterAlive = ref(true);
+    const reload = () => {
+      isRouterAlive.value = false;
+      nextTick(() => {
+        isRouterAlive.value = true;
+      });
+    };
+    provide("reload", reload);
+    return { isRouterAlive };
   },
 };
 </script>

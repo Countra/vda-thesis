@@ -1,3 +1,16 @@
 <template>
-    <h1>可视化分析列表</h1>
+  <VdaList />
 </template>
+
+<script>
+import VdaList from "@/components/VdaList.vue";
+
+export default {
+  components: {
+    VdaList,
+  },
+  setup() {
+    return {};
+  },
+};
+</script>
