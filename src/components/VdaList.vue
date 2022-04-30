@@ -85,6 +85,7 @@ export default {
   align-items: center;
   grid-column-start: 2;
 }
+
 .img img {
   width: 200px;
 }

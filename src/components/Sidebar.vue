@@ -1,12 +1,20 @@
 <template>
-  <el-row class="tac">
+  <el-row class="sidebar-container">
     <el-col :span="12">
-      <h5 style="width: max-content">学术搜索&可视化分析</h5>
+      <el-button
+        class="sidebar-control"
+        circle
+        @click="isCollapse = !isCollapse"
+      >
+        <el-icon v-if="isCollapse"><d-arrow-right /></el-icon>
+        <el-icon v-else><d-arrow-left /></el-icon>
+      </el-button>
       <el-menu
         default-active="1"
-        class="el-menu-vertical-demo"
+        class="menu-sidebar"
         @open="handleOpen"
         @close="handleClose"
+        :collapse="isCollapse"
       >
         <el-sub-menu index="1">
           <template #title>
@@ -25,7 +33,7 @@
         <router-link to="/analysis/vda" class="sider-nav">
           <el-menu-item index="2">
             <el-icon><data-analysis /></el-icon>
-            <span>可视化分析</span>
+            <template #title>可视化分析</template>
           </el-menu-item>
         </router-link>
       </el-menu>
@@ -34,15 +42,18 @@
 </template>
 
 <script >
-import { ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 export default {
   setup() {
-    const isCollapse = ref(true);
+    const isCollapse = ref(false);
     const store = useStore();
     const router = useRouter();
+
+    // 当前窗口的宽度
+    const offsetWidth = ref();
 
     const handleOpen = (key, keyPath) => {
       console.log(key, keyPath);
@@ -56,8 +67,27 @@ export default {
       store.commit("setSearchResultDisplay", true);
     };
 
+    onMounted(() => {
+      offsetWidth.value = document.body.offsetWidth;
+      window.onresize = () => {
+        return (() => {
+          offsetWidth.value = document.body.offsetWidth;
+        })();
+      };
+    });
+
+    // 监听页面宽度变化更改侧边栏状态
+    watch(offsetWidth, () => {
+      if (offsetWidth.value < 830) {
+        isCollapse.value = true;
+      } else {
+        isCollapse.value = false;
+      }
+    });
+
     return {
       isCollapse,
+      offsetWidth,
       handleOpen,
       handleClose,
       jumpToSearchResult,
@@ -67,12 +97,27 @@ export default {
 </script>
 
 <style scoped>
-.el-menu-vertical-demo:not(.el-menu--collapse) {
+.sidebar-container {
+  position: relative;
+}
+
+.menu-sidebar:not(.el-menu--collapse) {
   width: 200px;
-  min-height: 400px;
+}
+
+.menu-sidebar {
+  margin-top: 50px;
+  height: calc(100vh - 137px);
 }
 
 .sider-nav {
   text-decoration: none;
+}
+
+.sidebar-control {
+  position: absolute;
+  width: max-content;
+  top: 10px;
+  left: 17px;
 }
 </style>

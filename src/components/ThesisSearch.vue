@@ -11,7 +11,7 @@
         :fetch-suggestions="querySearchAsync"
         placeholder="输入关键字查询（多个关键字用空格分隔）"
         class="input-with-select"
-        style="width: 600px"
+        style="width: calc(100vw - 100px); max-width: 600px"
         size="large"
         @select="handleSelect"
         clearable
@@ -195,19 +195,24 @@ export default {
 .search-container {
   display: flex;
   justify-content: center;
-  align-content: center;
+  align-items: center;
   position: relative;
+  flex-direction: column;
   width: 100%;
   height: 240px;
 }
+
 .search-contain {
   margin-top: 200px;
 }
+
 .thesis-search {
   display: flex;
   position: absolute;
-  top: -200px;
-  width: 600px;
+  width: calc(100vw - 80px);
+  min-width: 360px;
+  max-width: 600px;
   z-index: -1;
+  object-fit: cover;
 }
 </style>

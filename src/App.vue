@@ -3,7 +3,7 @@
     <el-container>
       <el-header><PageHeader></PageHeader> </el-header>
       <el-container>
-        <el-aside width="200px">
+        <el-aside width="auto">
           <Siderbar></Siderbar>
         </el-aside>
         <el-main>

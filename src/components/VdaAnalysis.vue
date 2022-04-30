@@ -83,7 +83,29 @@ export default {
       authors: null,
     });
 
-    const initT = () => {
+    const initT = async () => {
+      // 为了优化Echarts绘制图形的整体效果，添加限制条件-->(如果检测到设备的宽度小于900px就提示不支持渲染然后返回)
+      if (document.body.offsetWidth < 900) {
+        await ElMessageBox.confirm(
+          "检测到此设备的屏幕宽度不满足渲染关系图的最低标准，为保证渲染效果请更换设备后重新尝试！",
+          "警告",
+          {
+            confirmButtonText: "确认",
+            showClose: false,
+            showCancelButton: false,
+            type: "warning",
+          }
+        )
+          .then(() => {
+            router.back(-1);
+            return;
+          })
+          .catch(() => {
+            router.back(-1);
+            return;
+          });
+      }
+
       const myChart = echarts.init(document.getElementById(mychartsId.value));
       console.log(myChart);
       let option = null;
