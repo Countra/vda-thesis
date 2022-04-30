@@ -40,7 +40,7 @@
       }}</el-button>
     </el-card>
   </div>
-  <div id="mycharts" class="chart-box" />
+  <div :id="mychartsId" class="chart-box" />
 </template>
 
 <script>
@@ -59,6 +59,9 @@ export default {
   setup() {
     const router = useRouter();
     const paperId = ref(router.currentRoute.value.params.paperId);
+
+    // 使用动态echarts id 防止生产环境下路由变化echarts不显示
+    const mychartsId = ref("Echart-" + Date.now() + Math.random());
 
     // 路由渲染组件刷新
     const routeReload = inject("reload");
@@ -81,7 +84,7 @@ export default {
     });
 
     const initT = () => {
-      const myChart = echarts.init(document.getElementById("mycharts"));
+      const myChart = echarts.init(document.getElementById(mychartsId.value));
       console.log(myChart);
       let option = null;
       const loading = ElLoading.service({
@@ -271,6 +274,7 @@ export default {
       router,
       paperId,
       abstract,
+      mychartsId,
       abstractStatus,
       toggleAbstract,
       saveVda,

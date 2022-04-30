@@ -1,5 +1,9 @@
 <template>
-  <div class="vda-list-container">
+  <div
+    class="vda-list-container"
+    v-loading.lock="vdaListLoad"
+    element-loading-text="加载中..."
+  >
     <VdaListCard
       class="vda-list-card"
       v-for="(item, index) in itemData.data"
@@ -31,6 +35,8 @@ export default {
     const itemData = reactive({ data: [] });
     const isEmpty = ref(false);
 
+    const vdaListLoad = ref(true);
+
     onMounted(() => {
       axios
         .get(`${process.env.VUE_APP_BACK_API}/api/vda/paper/enable`)
@@ -43,14 +49,16 @@ export default {
           } else {
             isEmpty.value = true;
           }
+          vdaListLoad.value = false;
         })
         .catch((error) => {
           console.log(error);
           isEmpty.value = true;
+          vdaListLoad.value = false;
           ElMessage.error("错误 " + error);
         });
     });
-    return { itemData, isEmpty };
+    return { itemData, isEmpty, vdaListLoad };
   },
 };
 </script>
@@ -59,7 +67,7 @@ export default {
 .vda-list-container {
   display: grid;
   width: 100%;
-  height: calc(100vh - 120px);
+  min-height: calc(100vh - 120px);
   grid-template-columns: 1fr 1fr 1fr;
   column-gap: 50px;
   row-gap: 30px;

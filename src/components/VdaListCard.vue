@@ -56,6 +56,9 @@ export default {
         node.label = {
           show: node.symbolSize > 30,
         };
+        if (node.symbolSize > 38) {
+          node.symbolSize = node.symbolSize - 25;
+        }
       });
       option = {
         title: {
