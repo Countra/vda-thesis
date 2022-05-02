@@ -229,6 +229,11 @@ export default {
               ],
             };
             myChart.setOption(option);
+            myChart.on("click", (param) => {
+              if (param.data.url) {
+                window.open(param.data.url, "_blank");
+              }
+            });
           })
           .catch((error) => {
             console.log(error);
