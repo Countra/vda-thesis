@@ -86,7 +86,7 @@ export default {
             data: graph.nodes,
             links: graph.links,
             categories: graph.categories,
-            roam: true,
+            roam: "move",
             label: {
               position: "right",
               formatter: "{b}",

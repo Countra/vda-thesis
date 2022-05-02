@@ -40,7 +40,21 @@
       }}</el-button>
     </el-card>
   </div>
-  <div :id="mychartsId" class="chart-box" />
+  <div class="chart-box">
+    <div class="echarts-zoom-btn">
+      <el-tooltip content="放大" placement="right-start" effect="light">
+        <el-button @click="zoomIn"
+          ><el-icon><zoom-in /></el-icon
+        ></el-button>
+      </el-tooltip>
+      <el-tooltip content="缩小" placement="right-start" effect="light">
+        <el-button @click="zoomOut"
+          ><el-icon><zoom-out /></el-icon
+        ></el-button>
+      </el-tooltip>
+    </div>
+    <div :id="mychartsId" class="chart-app" />
+  </div>
 </template>
 
 <script>
@@ -70,6 +84,9 @@ export default {
     const abstract = ref(null);
 
     const abstractStatus = ref(true);
+
+    // Echarts 实例化对象
+    let myChart = null;
 
     const toggleAbstract = () => {
       abstract.value.classList.toggle("collapse");
@@ -106,7 +123,7 @@ export default {
           });
       }
 
-      const myChart = echarts.init(document.getElementById(mychartsId.value));
+      myChart = echarts.init(document.getElementById(mychartsId.value));
       console.log(myChart);
       let option = null;
       const loading = ElLoading.service({
@@ -185,6 +202,11 @@ export default {
                   links: graph.links,
                   categories: graph.categories,
                   roam: true,
+                  scaleLimit: {
+                    min: 0.5,
+                    max: 2,
+                  },
+                  zoom: 1,
                   label: {
                     position: "right",
                     formatter: "{b}",
@@ -291,12 +313,32 @@ export default {
       initT();
     });
 
+    const zoomIn = () => {
+      myChart.setOption({
+        series: {
+          zoom: myChart.getOption().series[0].zoom + 0.2,
+        },
+      });
+    };
+
+    const zoomOut = () => {
+      if (myChart.getOption().series[0].zoom > 0) {
+        myChart.setOption({
+          series: {
+            zoom: myChart.getOption().series[0].zoom - 0.2,
+          },
+        });
+      }
+    };
+
     return {
       paper,
       router,
       paperId,
       abstract,
       mychartsId,
+      zoomIn,
+      zoomOut,
       abstractStatus,
       toggleAbstract,
       saveVda,
@@ -309,9 +351,15 @@ export default {
 
 <style lang="css" scoped>
 .chart-box {
+  position: relative;
   margin-left: 200px;
   width: calc(100vw - 460px);
   height: calc(100vh - 130px);
+}
+
+.chart-app {
+  width: 100%;
+  height: 100%;
 }
 
 .vda-info-card {
@@ -356,5 +404,22 @@ export default {
   align-items: center;
   margin-top: 10px;
   padding: 0 5px;
+}
+
+.echarts-zoom-btn {
+  position: absolute;
+  left: 80px;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 0;
+  margin: 0;
+}
+
+.echarts-zoom-btn button {
+  margin: 10px 0;
 }
 </style>
