@@ -42,6 +42,26 @@
   </div>
   <div class="chart-box">
     <div class="echarts-zoom-btn">
+      <el-popover
+        ref="popover"
+        placement="right"
+        title="提示"
+        :width="200"
+        trigger="click"
+        content=""
+      >
+        <template #reference>
+          <el-button
+            ><el-icon><info-filled /></el-icon
+          ></el-button>
+        </template>
+        <template #default>
+          <p>图表上不同颜色的ABCD等分类代表论文之间引用关系的层级</p>
+          <span
+            >详解：A代表本次引用关系分析的目标论文，B分类是引用了A的部分论文信息，C、D、E等分类分别代表引用了B分类中某一篇论文下的部分论文信息</span
+          >
+        </template>
+      </el-popover>
       <el-tooltip content="放大" placement="right-start" effect="light">
         <el-button @click="zoomIn"
           ><el-icon><zoom-in /></el-icon
