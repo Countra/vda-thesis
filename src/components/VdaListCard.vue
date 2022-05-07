@@ -72,7 +72,8 @@ export default {
           {
             // selectedMode: 'single',
             data: graph.categories.map(function (a) {
-              return a.name;
+              // return a.name;
+              return "";
             }),
           },
         ],
