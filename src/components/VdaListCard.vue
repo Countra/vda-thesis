@@ -26,7 +26,7 @@
 <script>
 import { toRefs, onMounted, inject } from "vue";
 import * as echarts from "echarts";
-import axios from "axios";
+import axiosRequest from "@/utils/axiosRequest";
 import {
   ElLoading,
   ElMessage,
@@ -117,9 +117,10 @@ export default {
     });
 
     const deleteVda = () => {
-      let reqUrl = `${process.env.VUE_APP_BACK_API}/api/vda/paper/${paperId.value}/disable`;
-      axios
-        .get(reqUrl)
+      axiosRequest({
+        method: "get",
+        url: `/api/vda/paper/${paperId.value}/disable`,
+      })
         .then((result) => {
           if (result.data.code == 200) {
             ElNotification({

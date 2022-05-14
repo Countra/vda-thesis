@@ -9,7 +9,11 @@
             ><span>{{ paper.authors }}</span>
           </div>
           <div class="vda-button">
-            <el-button type="primary" size="small" @click="saveVda"
+            <el-button
+              type="primary"
+              size="small"
+              @click="saveVda"
+              :disabled="store.state.user.userName == null"
               >保存</el-button
             >
             <el-popconfirm
@@ -17,7 +21,12 @@
               @confirm="deleteVda"
             >
               <template #reference>
-                <el-button type="danger" size="small">删除</el-button>
+                <el-button
+                  type="danger"
+                  size="small"
+                  :disabled="store.state.user.userName == null"
+                  >删除</el-button
+                >
               </template>
             </el-popconfirm>
             <el-popconfirm
@@ -62,6 +71,11 @@
           >
         </template>
       </el-popover>
+      <el-tooltip content="保存" placement="right-start" effect="light">
+        <el-button @click="exportVda">
+          <el-icon><Download /></el-icon>
+        </el-button>
+      </el-tooltip>
       <el-tooltip content="放大" placement="right-start" effect="light">
         <el-button @click="zoomIn"
           ><el-icon><zoom-in /></el-icon
@@ -81,13 +95,14 @@
 import { inject, onMounted, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import * as echarts from "echarts";
-import axios from "axios";
+import axiosRequest from "@/utils/axiosRequest";
 import {
   ElLoading,
   ElMessage,
   ElMessageBox,
   ElNotification,
 } from "element-plus";
+import { useStore } from "vuex";
 
 export default {
   setup() {
@@ -107,6 +122,8 @@ export default {
 
     // Echarts 实例化对象
     let myChart = null;
+
+    const store = useStore();
 
     const toggleAbstract = () => {
       abstract.value.classList.toggle("collapse");
@@ -151,8 +168,10 @@ export default {
         text: "可视化分析构建中...",
       });
 
-      axios
-        .get(`${process.env.VUE_APP_BACK_API}/api/paper/${paperId.value}`)
+      axiosRequest({
+        method: "get",
+        url: `/api/paper/${paperId.value}`,
+      })
         .then((result) => {
           if (result.data.code == 200 && result.data.data.legend != 0) {
             console.log(result.data.data);
@@ -178,8 +197,10 @@ export default {
         });
 
       const buildEchartsOption = (myChart) => {
-        axios
-          .get(`${process.env.VUE_APP_BACK_API}/api/vda/paper/${paperId.value}`)
+        axiosRequest({
+          method: "get",
+          url: `/api/vda/paper/${paperId.value}`,
+        })
           .then((result) => {
             loading.close();
 
@@ -275,9 +296,10 @@ export default {
 
     // 保存
     const saveVda = () => {
-      let reqUrl = `${process.env.VUE_APP_BACK_API}/api/vda/paper/${paperId.value}/enable`;
-      axios
-        .get(reqUrl)
+      axiosRequest({
+        method: "get",
+        url: `/api/vda/paper/${paperId.value}/enable`,
+      })
         .then((result) => {
           if (result.data.code == 200) {
             ElNotification({
@@ -296,9 +318,10 @@ export default {
 
     // 删除
     const deleteVda = () => {
-      let reqUrl = `${process.env.VUE_APP_BACK_API}/api/vda/paper/${paperId.value}/disable`;
-      axios
-        .get(reqUrl)
+      axiosRequest({
+        method: "get",
+        url: `/api/vda/paper/${paperId.value}/disable`,
+      })
         .then((result) => {
           if (result.data.code == 200) {
             ElNotification({
@@ -317,9 +340,10 @@ export default {
 
     // 重载
     const reloadVda = () => {
-      let reqUrl = `${process.env.VUE_APP_BACK_API}/api/vda/paper/${paperId.value}/reload`;
-      axios
-        .get(reqUrl)
+      axiosRequest({
+        method: "get",
+        url: `/api/vda/paper/${paperId.value}/reload`,
+      })
         .then((result) => {
           if (result.data.code == 200) {
             routeReload();
@@ -356,10 +380,16 @@ export default {
       }
     };
 
+    // 导出可视化分析数据
+    const exportVda = () => {
+      
+    };
+
     return {
       paper,
       router,
       paperId,
+      store,
       abstract,
       mychartsId,
       zoomIn,
@@ -369,6 +399,7 @@ export default {
       saveVda,
       deleteVda,
       reloadVda,
+      exportVda,
     };
   },
 };

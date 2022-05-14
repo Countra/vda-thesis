@@ -8,6 +8,11 @@ export default createStore({
     seachResultKeyWord: "",
     searchResultOffset: 0,
     searchResultLimit: 10,
+    user: {
+      userName: null,
+      role: null,
+      token: null,
+    }
   },
   getters: {
     // 当前搜索页的页数
@@ -34,6 +39,22 @@ export default createStore({
     },
     setSearchResultOffset: (state, result) => {
       state.searchResultOffset = result;
+    },
+    // 设置用户登录状态信息
+    setUserLoginInfo: (state, result) => {
+      state.user = {
+        userName: result.userName,
+        role: result.userName,
+        token: result.userName,
+      }
+    },
+    // 清除用户信息
+    clearUserLoginInfo: (state) => {
+      state.user = {
+        userName: null,
+        role: null,
+        token: null,
+      }
     }
   },
   actions: {
