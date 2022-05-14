@@ -6,9 +6,11 @@
     :auto-upload="false"
     :on-change="handleChange"
   >
-    <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-    <div class="el-upload__text">
-      将json文件拖拽到这里，或者 <em>点击导入</em>
+    <div class="upload-drop-area">
+      <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+      <div class="el-upload__text">
+        将json文件拖拽到这里，或者 <em>点击导入</em>
+      </div>
     </div>
     <template #tip>
       <div class="el-upload__tip">only support json file</div>
@@ -88,6 +90,7 @@ export default {
 
     // 使用动态echarts id 防止生产环境下路由变化echarts不显示
     const mychartsId = ref("Echart-offline-" + Date.now());
+    let isAddListen = false;
     // Echarts 实例化对象
     let myChart = null;
     let importData = null;
@@ -189,11 +192,15 @@ export default {
           ],
         };
         myChart.setOption(option);
-        myChart.on("click", (param) => {
-          if (param.data.url) {
-            window.open(param.data.url, "_blank");
-          }
-        });
+        if (!isAddListen) {
+          isAddListen = !isAddListen;
+          myChart.on("click", (param) => {
+            // console.log(param);
+            if (param.data.url) {
+              window.open(param.data.url, "_blank");
+            }
+          });
+        }
       }, 500);
     };
     return {
@@ -216,6 +223,29 @@ export default {
   display: flex;
   width: 100%;
   height: 100%;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+/* .upload /deep/ .el-upload {
+  width: 100%;
+  height: 100%;
+} */
+.upload:deep() .el-upload {
+  width: 100%;
+  height: 100%;
+}
+/* .upload /deep/ .el-upload .el-upload-dragger */
+.upload:deep() .el-upload .el-upload-dragger {
+  width: 100%;
+  height: 100%;
+}
+
+.upload-drop-area {
+  width: 100%;
+  height: 100%;
+  display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: column;

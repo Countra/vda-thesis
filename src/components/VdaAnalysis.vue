@@ -92,7 +92,7 @@
 
   <!-- 导出选项 -->
   <div>
-    <el-dialog v-model="exportDialogVisible" title="选项" width="30%" center>
+    <el-dialog v-model="exportDialogVisible" title="选择导出的方式" width="30%" center>
       <div class="vda-export-fn">
         <div class="export-item">
           <h4>导出为图片</h4>
@@ -377,6 +377,11 @@ export default {
 
     // 重载
     const reloadVda = () => {
+      if (store.state.user.token == null) {
+        routeReload();
+        // router.go(0);
+        return;
+      }
       axiosRequest({
         method: "get",
         url: `/api/vda/paper/${paperId.value}/reload`,

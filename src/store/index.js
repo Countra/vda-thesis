@@ -44,8 +44,8 @@ export default createStore({
     setUserLoginInfo: (state, result) => {
       state.user = {
         userName: result.userName,
-        role: result.userName,
-        token: result.userName,
+        role: result.role,
+        token: result.token,
       }
     },
     // 清除用户信息

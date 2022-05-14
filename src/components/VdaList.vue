@@ -25,6 +25,7 @@
 import { inject, onMounted, reactive, ref } from "vue";
 import VdaListCard from "@/components/VdaListCard.vue";
 import axios from "axios";
+import axiosRequest from "@/utils/axiosRequest";
 import { ElMessageBox, ElMessage } from "element-plus";
 
 export default {
@@ -38,8 +39,10 @@ export default {
     const vdaListLoad = ref(true);
 
     onMounted(() => {
-      axios
-        .get(`${process.env.VUE_APP_BACK_API}/api/vda/paper/enable`)
+      axiosRequest({
+        method: "GET",
+        url: "/api/vda/paper/enable",
+      })
         .then((result) => {
           if (result.data.code == 200) {
             itemData.data = result.data.data;
