@@ -71,8 +71,8 @@
           >
         </template>
       </el-popover>
-      <el-tooltip content="保存" placement="right-start" effect="light">
-        <el-button @click="exportVda">
+      <el-tooltip content="导出" placement="right-start" effect="light">
+        <el-button @click="exportDialogVisible = true">
           <el-icon><Download /></el-icon>
         </el-button>
       </el-tooltip>
@@ -88,6 +88,31 @@
       </el-tooltip>
     </div>
     <div :id="mychartsId" class="chart-app" />
+  </div>
+
+  <!-- 导出选项 -->
+  <div>
+    <el-dialog v-model="exportDialogVisible" title="选项" width="30%" center>
+      <div class="vda-export-fn">
+        <div class="export-item">
+          <h4>导出为图片</h4>
+          <el-button @click="exportVdaPic">
+            <el-icon><PictureFilled /></el-icon>
+          </el-button>
+        </div>
+        <div class="export-item">
+          <h4>导出为JSON</h4>
+          <el-button @click="exportVdaToJSON">
+            <el-icon><List /></el-icon>
+          </el-button>
+        </div>
+      </div>
+      <!-- <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="exportDialogVisible = false">取消</el-button>
+        </span>
+      </template> -->
+    </el-dialog>
   </div>
 </template>
 
@@ -122,8 +147,16 @@ export default {
 
     // Echarts 实例化对象
     let myChart = null;
+    // Echarts 绘制的关系图JSON数据
+    let myChartVdaData = {
+      paper: null,
+      vdaData: null,
+    };
 
     const store = useStore();
+
+    // 导出选项的dialog
+    const exportDialogVisible = ref(false);
 
     const toggleAbstract = () => {
       abstract.value.classList.toggle("collapse");
@@ -185,6 +218,9 @@ export default {
                 result.data.data.authors[0].name +
                 `等${result.data.data.authors.length - 1}位作者`;
             }
+            // 补充待导出数据
+            myChartVdaData.paper = paper;
+            myChartVdaData.paper.id = paperId.value;
             buildEchartsOption(myChart);
           } else {
             console.log("获取数据失败");
@@ -205,6 +241,7 @@ export default {
             loading.close();
 
             let graph = result.data.data;
+            myChartVdaData.vdaData = graph;
             console.log(graph);
 
             if (result.data.code != 200) {
@@ -380,9 +417,26 @@ export default {
       }
     };
 
-    // 导出可视化分析数据
-    const exportVda = () => {
-      
+    // 导出可视化分析数据(JSON)
+    const exportVdaToJSON = () => {
+      let exportData = JSON.stringify(myChartVdaData);
+      // 字符内容转变成blob地址
+      var blob = new Blob([exportData]);
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.setAttribute("download", paper.title + ".json");
+      a.click();
+    };
+
+    // 保存图片到本地
+    const exportVdaPic = () => {
+      const a = document.createElement("a");
+      a.href = myChart.getDataURL({
+        pixelRatio: 2,
+        backgroundColor: "#fff",
+      });
+      a.setAttribute("download", paper.title);
+      a.click();
     };
 
     return {
@@ -392,6 +446,7 @@ export default {
       store,
       abstract,
       mychartsId,
+      exportDialogVisible,
       zoomIn,
       zoomOut,
       abstractStatus,
@@ -399,7 +454,8 @@ export default {
       saveVda,
       deleteVda,
       reloadVda,
-      exportVda,
+      exportVdaPic,
+      exportVdaToJSON,
     };
   },
 };
@@ -477,5 +533,20 @@ export default {
 
 .echarts-zoom-btn button {
   margin: 10px 0;
+}
+
+.vda-export-fn {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vda-export-fn .export-item {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 5px 50px;
 }
 </style>

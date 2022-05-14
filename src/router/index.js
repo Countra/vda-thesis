@@ -4,6 +4,7 @@ import VdaListView from '../views/VdaListView.vue'
 import axiosRequest from "@/utils/axiosRequest";
 import store from '@/store';
 import { ElNotification } from "element-plus";
+import VdaImportView from "@/views/VdaImportView.vue";
 
 const routes = [
   {
@@ -15,6 +16,11 @@ const routes = [
     path: '/analysis/vda',
     name: 'vdaList',
     component: VdaListView
+  },
+  {
+    path: '/analysis/vda/import',
+    name: 'vdaImport',
+    component: VdaImportView
   },
   {
     path: '/analysis/vda/:paperId',

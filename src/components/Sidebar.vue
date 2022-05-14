@@ -30,12 +30,20 @@
             </div>
           </el-menu-item-group>
         </el-sub-menu>
-        <router-link to="/analysis/vda" class="sider-nav">
-          <el-menu-item index="2">
+        <el-sub-menu index="2">
+          <template #title>
             <el-icon><data-analysis /></el-icon>
-            <template #title>可视化分析</template>
-          </el-menu-item>
-        </router-link>
+            <span>可视化分析</span>
+          </template>
+          <el-menu-item-group title="">
+            <router-link to="/analysis/vda" class="sider-nav">
+              <el-menu-item index="2-1">已保存的分析结果</el-menu-item>
+            </router-link>
+            <router-link to="/analysis/vda/import" class="sider-nav">
+              <el-menu-item index="2-2">导入</el-menu-item>
+            </router-link>
+          </el-menu-item-group>
+        </el-sub-menu>
       </el-menu>
     </el-col>
   </el-row>
