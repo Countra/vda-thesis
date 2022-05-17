@@ -17,12 +17,17 @@
             </el-menu-item>
           </div>
           <div v-else>
-            <el-menu-item index="1-1">
+            <el-menu-item index="1-1" v-if="store.state.user.role == 1">
+              <router-link to="/user/manager" class="sider-nav">
+                <el-icon><UserFilled /></el-icon>用户管理
+              </router-link>
+            </el-menu-item>
+            <el-menu-item index="1-2">
               <router-link to="/analysis/vda" class="sider-nav">
                 <el-icon><monitor /></el-icon>已保存的可视化分析
               </router-link>
             </el-menu-item>
-            <el-menu-item index="1-2" @click="logout"
+            <el-menu-item index="1-3" @click="logout"
               ><el-icon><position /></el-icon>退出</el-menu-item
             >
           </div>
@@ -98,6 +103,7 @@ import { ElMessageBox, ElMessage, ElNotification } from "element-plus";
 import { useStore } from "vuex";
 import { ref, reactive, inject } from "vue";
 import axiosRequest from "@/utils/axiosRequest";
+import { useRouter } from "vue-router";
 
 export default {
   setup() {
@@ -117,6 +123,8 @@ export default {
     const loginAndRegister = () => {
       loginDialogFormVisible.value = true;
     };
+
+    const router = useRouter();
 
     // 登录&注册
     const signIn = () => {
@@ -219,7 +227,8 @@ export default {
         .then(() => {
           localStorage.removeItem("user");
           store.commit("clearUserLoginInfo");
-          reload();
+          router.push("/");
+          // reload();
         })
         .catch(() => {
           // catch error

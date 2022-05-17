@@ -5,6 +5,7 @@ import axiosRequest from "@/utils/axiosRequest";
 import store from '@/store';
 import { ElNotification } from "element-plus";
 import VdaImportView from "@/views/VdaImportView.vue";
+import UserManagerView from '@/views/UserManagerView.vue'
 
 const routes = [
   {
@@ -21,6 +22,12 @@ const routes = [
     path: '/analysis/vda/import',
     name: 'vdaImport',
     component: VdaImportView
+  },
+  // 用户管理
+  {
+    path: '/user/manager',
+    name: 'userManager',
+    component: UserManagerView
   },
   {
     path: '/analysis/vda/:paperId',
@@ -56,6 +63,15 @@ router.beforeEach((to, from, next) => {
       type: 'error',
     })
     next({ path: '/notFound' });
+  }
+  if (to.path == '/user/manager') {
+    if (store.state.user.role == 1) {
+      next();
+    } else {
+      console.log(from);
+      // next({ path: from.path });
+      next({ path: '/' });
+    }
   }
   if (to.path.startsWith('/login')) {
     localStorage.removeItem('user');
